@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { getPublicIdFromUrl } from "../utils/publicIdExtractor.js";
 import jwt from "jsonwebtoken";
 import { v2 as cloudinary } from "cloudinary";
 import mongoose from "mongoose";
@@ -302,15 +303,9 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
   // local pr multer ne file upload kr di hogi
   // old avatar url nhi object return kr rha uss obj se avatar url nikalna hoga
   const oldAvatar = await User.findById(req.user?._id).select("avatar");
-  const PublicIdFromUrl = (url) => {
-    return url
-      .split("/upload/")[1]
-      .split(".")[0]
-      .replace(/^v\d+\//, "");
-  };
   let PublicIdOldAvatar;
   if (oldAvatar?.avatar) {
-    PublicIdOldAvatar = PublicIdFromUrl(oldAvatar?.avatar);
+    PublicIdOldAvatar = getPublicIdFromUrl(oldAvatar?.avatar);
   }
   const avatarLocalPath = req.file?.path;
   if (!avatarLocalPath) {
