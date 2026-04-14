@@ -6,11 +6,57 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { getPublicIdFromUrl } from "../utils/publicIdExtractor.js";
+import { v2 as cloudinary } from "cloudinary";
 
 // faced lot of challenges here
 const getAllVideos = asyncHandler(async (req, res) => {
-  const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query;
-  //TODO: get all videos based on query, sort, pagination
+  // 🔹 1. query params nikaal rahe hain URL se
+  const {
+    page = 1,
+    limit = 10,
+    query,
+    sortBy = "createdAt",
+    sortType = "desc",
+    userId,
+  } = req.query;
+
+  // 🔹 2. pagination ke liye skip calculate
+  const skip = (page - 1) * limit;
+
+  // 🔹 3. empty match object (yahi filter banega)
+  let match = {};
+
+  // 🔹 4. agar search query hai to title/description me search karo
+  if (query) {
+    match.$or = [
+      { title: { $regex: query, $options: "i" } }, // "i" = case insensitive
+      { description: { $regex: query, $options: "i" } },
+    ];
+  }
+
+  // 🔹 5. agar userId diya hai to us user ke videos hi lao
+  if (userId) {
+    match.owner = new mongoose.Types.ObjectId(userId);
+  }
+
+  // 🔹 6. sorting object bana rahe hain
+  const sort = {};
+  sort[sortBy] = sortType === "asc" ? 1 : -1; // asc = 1, desc = -1
+
+  // 🔹 7. MongoDB aggregation pipeline run
+  const videos = await Video.aggregate([
+    { $match: match },     // filter apply
+    { $sort: sort },       // sorting
+    { $skip: skip },       // pagination (skip)
+    { $limit: Number(limit) }, // kitne records chahiye
+  ]);
+
+  // 🔹 8. response bhejna
+  res.status(200).json({
+    success: true,
+    count: videos.length,
+    videos,
+  });
 });
 
 const publishAVideo = asyncHandler(async (req, res) => {
@@ -96,10 +142,14 @@ const updateVideo = asyncHandler(async (req, res) => {
     { new: true }
   );
   if (video) {
-    await uploadOnCloudinary.deleteVideo(getPublicIdFromUrl(oldVideo.videoFile));
+    await cloudinary.uploader.destroy(getPublicIdFromUrl(oldVideo.videoFile), {
+      resource_type: "video"
+    });
   }
   if (thumbnail) {
-    await uploadOnCloudinary.deleteImage(getPublicIdFromUrl(oldVideo.thumbnail));
+    await cloudinary.uploader.destroy(getPublicIdFromUrl(oldVideo.thumbnail), {
+      resource_type: "image"
+    });
   }
 
   return res
@@ -113,6 +163,7 @@ const updateVideo = asyncHandler(async (req, res) => {
     );
 });
 
+// bug fixed cloudinary video deletion
 const deleteVideo = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
   const video = await Video.findById(videoId);
@@ -121,8 +172,10 @@ const deleteVideo = asyncHandler(async (req, res) => {
   }
   const videoPublicId = getPublicIdFromUrl(video.videoFile);
   const thumbnailPublicId = getPublicIdFromUrl(video.thumbnail);
-  await uploadOnCloudinary.deleteVideo(videoPublicId);
-  await uploadOnCloudinary.deleteImage(thumbnailPublicId);
+  await cloudinary.uploader.destroy(videoPublicId ,{
+    resource_type: "video"
+  });
+  await cloudinary.uploader.destroy(thumbnailPublicId);
   await Video.findByIdAndDelete(videoId);
 
   return res
