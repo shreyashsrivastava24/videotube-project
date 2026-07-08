@@ -112,7 +112,7 @@ const PlaylistDetail = () => {
 
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-      {/* Playlist Meta Sidebar */}
+      {/* Playlist Meta — full width on mobile, sidebar on md+ */}
       <div className="glass rounded-2xl p-6 border border-gray-800/80 flex flex-col gap-4 self-start">
         <div className="aspect-video w-full rounded-xl bg-purple-900/20 border border-purple-500/10 flex items-center justify-center text-purple-500">
           <Folder className="h-16 w-16" />
@@ -190,7 +190,7 @@ const PlaylistDetail = () => {
             {playlist.videos.map((vid, idx) => (
               <div
                 key={vid._id}
-                className="group flex gap-4 rounded-2xl p-2.5 hover:bg-gray-900/30 transition-colors relative"
+                className="group flex gap-3 rounded-2xl p-2.5 hover:bg-gray-900/30 transition-colors relative"
               >
                 {/* Index number */}
                 <span className="self-center text-xs font-semibold text-gray-500 w-4 text-center shrink-0">
@@ -198,7 +198,7 @@ const PlaylistDetail = () => {
                 </span>
 
                 {/* Thumbnail */}
-                <Link to={`/watch/${vid._id}`} className="relative aspect-video w-36 shrink-0 overflow-hidden rounded-xl bg-gray-900">
+                <Link to={`/watch/${vid._id}`} className="relative aspect-video w-28 sm:w-36 shrink-0 overflow-hidden rounded-xl bg-gray-900">
                   <img src={vid.thumbnail} alt={vid.title} className="h-full w-full object-cover" />
                   <span className="absolute bottom-1 right-1.5 rounded bg-black/75 px-1 py-0.5 text-[10px] font-semibold text-white">
                     {formatDuration(vid.duration)}

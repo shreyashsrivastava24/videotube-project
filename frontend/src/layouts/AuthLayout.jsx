@@ -19,10 +19,10 @@ const AuthLayout = () => {
   }
 
   return (
-    <div className="flex min-h-screen w-screen items-center justify-center bg-[#0B0F19] p-4 text-white">
-      {/* Dynamic background glow */}
-      <div className="absolute top-1/4 left-1/4 h-[300px] w-[300px] rounded-full bg-purple-600/10 blur-[100px] pointer-events-none"></div>
-      <div className="absolute bottom-1/4 right-1/4 h-[300px] w-[300px] rounded-full bg-blue-600/10 blur-[100px] pointer-events-none"></div>
+    <div className="flex min-h-screen w-screen items-center justify-center bg-[#0B0F19] p-4 text-white overflow-x-hidden">
+      {/* Dynamic background glow — constrained so they don't cause overflow */}
+      <div className="fixed top-1/4 left-1/4 h-[300px] w-[300px] rounded-full bg-purple-600/10 blur-[100px] pointer-events-none" aria-hidden="true"></div>
+      <div className="fixed bottom-1/4 right-1/4 h-[300px] w-[300px] rounded-full bg-blue-600/10 blur-[100px] pointer-events-none" aria-hidden="true"></div>
 
       <div className="relative w-full max-w-md">
         <div className="mb-8 flex flex-col items-center">
@@ -37,7 +37,7 @@ const AuthLayout = () => {
           <p className="mt-2 text-sm text-gray-400">Stream and share premium video content</p>
         </div>
 
-        <div className="glass rounded-2xl p-8 shadow-2xl">
+        <div className="glass rounded-2xl p-5 sm:p-8 shadow-2xl">
           <Outlet />
         </div>
       </div>

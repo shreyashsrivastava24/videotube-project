@@ -6,13 +6,25 @@
   --font-heading: 'Outfit', sans-serif;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;
+}
+
 body {
   font-family: var(--font-sans);
-  background-color: #0F172A; /* premium ultra dark blue/black background */
+  background-color: #0F172A;
   color: #F8FAFC;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  /* Prevent layout shift when scroll is locked */
+  scrollbar-gutter: stable;
 }
 
 /* Custom premium scrollbar styling */
@@ -62,4 +74,30 @@ body {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Hide scrollbar but keep scroll functionality */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Touch-friendly minimum tap target */
+.min-h-touch {
+  min-height: 44px;
+}
+
+/* Prevent text size adjustment on mobile orientation change */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Responsive images */
+img, video {
+  max-width: 100%;
+  height: auto;
 }

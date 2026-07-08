@@ -174,14 +174,14 @@ const Dashboard = () => {
   return (
     <div className="space-y-6">
       {/* Title Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold font-heading text-white">Creator Dashboard</h1>
+          <h1 className="text-xl sm:text-2xl font-bold font-heading text-white">Creator Dashboard</h1>
           <p className="text-xs text-gray-400">Monitor stats and manage channel videos</p>
         </div>
         <button
           onClick={() => setUploadModalOpen(true)}
-          className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-5 py-2.5 text-xs font-semibold text-white shadow-lg hover:opacity-95 transition-opacity"
+          className="flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-5 py-2.5 text-xs font-semibold text-white shadow-lg hover:opacity-95 transition-opacity w-full sm:w-auto"
         >
           <Plus className="h-4 w-4" />
           <span>Upload Video</span>
@@ -223,75 +223,124 @@ const Dashboard = () => {
         </div>
 
         {videos.length === 0 ? (
-          <div className="text-center py-20 text-sm text-gray-500">
-            No videos uploaded yet. Click "Upload Video" to publish your first content!
+          <div className="text-center py-16 text-sm text-gray-500 px-4">
+            No videos uploaded yet. Click &ldquo;Upload Video&rdquo; to publish your first content!
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-gray-300">
-              <thead className="bg-gray-900/50 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                <tr>
-                  <th className="px-6 py-4">Video</th>
-                  <th className="px-6 py-4">Publish</th>
-                  <th className="px-6 py-4">Views</th>
-                  <th className="px-6 py-4">Date Uploaded</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-800/80">
-                {videos.map((vid) => (
-                  <tr key={vid._id} className="hover:bg-gray-900/10">
-                    <td className="px-6 py-4 flex items-center gap-3">
-                      <img
-                        src={vid.thumbnail}
-                        alt="thumb"
-                        className="h-10 w-16 rounded-md object-cover bg-gray-800 shrink-0"
-                      />
-                      <div className="min-w-0">
-                        <Link to={`/watch/${vid._id}`} className="block font-medium text-white hover:text-purple-400 truncate">
-                          {vid.title}
-                        </Link>
-                        <span className="text-[10px] text-gray-500">{formatDuration(vid.duration)}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <button onClick={() => handleTogglePublish(vid._id)} className="text-gray-400 hover:text-white">
+          <>
+            {/* Mobile card list — shown below md */}
+            <div className="md:hidden divide-y divide-gray-800/60">
+              {videos.map((vid) => (
+                <div key={vid._id} className="flex gap-3 p-4 hover:bg-gray-900/20 transition-colors">
+                  <Link to={`/watch/${vid._id}`} className="relative h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-gray-800">
+                    <img src={vid.thumbnail} alt="thumb" className="h-full w-full object-cover" />
+                    <span className="absolute bottom-1 right-1 rounded bg-black/75 px-1 py-0.5 text-[10px] font-semibold text-white">
+                      {formatDuration(vid.duration)}
+                    </span>
+                  </Link>
+                  <div className="flex-1 min-w-0">
+                    <Link to={`/watch/${vid._id}`} className="block text-sm font-medium text-white hover:text-purple-400 line-clamp-2 leading-snug">
+                      {vid.title}
+                    </Link>
+                    <div className="mt-1.5 flex items-center gap-2 flex-wrap">
+                      <button onClick={() => handleTogglePublish(vid._id)}>
                         {vid.isPublished ? (
-                          <div className="flex items-center gap-1.5 text-emerald-400 text-xs font-semibold">
-                            <ToggleRight className="h-5 w-5" />
-                            <span>Public</span>
-                          </div>
+                          <span className="flex items-center gap-1 text-emerald-400 text-[10px] font-semibold">
+                            <ToggleRight className="h-3.5 w-3.5" />Public
+                          </span>
                         ) : (
-                          <div className="flex items-center gap-1.5 text-gray-500 text-xs font-semibold">
-                            <ToggleLeft className="h-5 w-5" />
-                            <span>Unlisted</span>
-                          </div>
+                          <span className="flex items-center gap-1 text-gray-500 text-[10px] font-semibold">
+                            <ToggleLeft className="h-3.5 w-3.5" />Unlisted
+                          </span>
                         )}
                       </button>
-                    </td>
-                    <td className="px-6 py-4">{vid.views}</td>
-                    <td className="px-6 py-4 text-xs text-gray-500">{formatTimeAgo(vid.createdAt)}</td>
-                    <td className="px-6 py-4 text-right space-x-2">
+                      <span className="text-[10px] text-gray-600">•</span>
+                      <span className="text-[10px] text-gray-500">{vid.views} views</span>
+                      <span className="text-[10px] text-gray-600">•</span>
+                      <span className="text-[10px] text-gray-500">{formatTimeAgo(vid.createdAt)}</span>
+                    </div>
+                    <div className="mt-2 flex gap-2">
                       <button
                         onClick={() => handleStartEdit(vid)}
-                        className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-800 hover:text-white inline-flex"
-                        title="Edit Details"
+                        className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs text-gray-400 hover:bg-gray-800 hover:text-white border border-gray-800 transition-colors"
                       >
-                        <Edit2 className="h-4 w-4" />
+                        <Edit2 className="h-3 w-3" />Edit
                       </button>
                       <button
                         onClick={() => handleDeleteVideo(vid._id)}
-                        className="rounded-lg p-1.5 text-gray-400 hover:bg-red-500/10 hover:text-red-400 inline-flex"
-                        title="Delete Video"
+                        className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs text-red-400 hover:bg-red-500/10 border border-red-500/20 transition-colors"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3 w-3" />Delete
                       </button>
-                    </td>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop table — shown at md and above */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-sm text-gray-300">
+                <thead className="bg-gray-900/50 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  <tr>
+                    <th className="px-6 py-4">Video</th>
+                    <th className="px-6 py-4">Publish</th>
+                    <th className="px-6 py-4">Views</th>
+                    <th className="px-6 py-4">Date Uploaded</th>
+                    <th className="px-6 py-4 text-right">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-gray-800/80">
+                  {videos.map((vid) => (
+                    <tr key={vid._id} className="hover:bg-gray-900/10">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <img src={vid.thumbnail} alt="thumb" className="h-10 w-16 rounded-md object-cover bg-gray-800 shrink-0" />
+                          <div className="min-w-0">
+                            <Link to={`/watch/${vid._id}`} className="block font-medium text-white hover:text-purple-400 truncate">
+                              {vid.title}
+                            </Link>
+                            <span className="text-[10px] text-gray-500">{formatDuration(vid.duration)}</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <button onClick={() => handleTogglePublish(vid._id)} className="text-gray-400 hover:text-white">
+                          {vid.isPublished ? (
+                            <div className="flex items-center gap-1.5 text-emerald-400 text-xs font-semibold">
+                              <ToggleRight className="h-5 w-5" /><span>Public</span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-1.5 text-gray-500 text-xs font-semibold">
+                              <ToggleLeft className="h-5 w-5" /><span>Unlisted</span>
+                            </div>
+                          )}
+                        </button>
+                      </td>
+                      <td className="px-6 py-4">{vid.views}</td>
+                      <td className="px-6 py-4 text-xs text-gray-500">{formatTimeAgo(vid.createdAt)}</td>
+                      <td className="px-6 py-4 text-right space-x-2">
+                        <button
+                          onClick={() => handleStartEdit(vid)}
+                          className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-800 hover:text-white inline-flex"
+                          title="Edit Details"
+                        >
+                          <Edit2 className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteVideo(vid._id)}
+                          className="rounded-lg p-1.5 text-gray-400 hover:bg-red-500/10 hover:text-red-400 inline-flex"
+                          title="Delete Video"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 

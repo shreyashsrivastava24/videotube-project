@@ -180,18 +180,18 @@ const Watch = () => {
             {video.title}
           </h1>
 
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-800/80 pb-4">
+          <div className="flex flex-wrap items-start justify-between gap-3 border-b border-gray-800/80 pb-4">
             {/* Channel Details & Subscription */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
               <Link to={`/c/${video.owner?.username}`}>
                 <img
                   src={video.owner?.avatar || "https://api.dicebear.com/7.x/adventurer/svg"}
                   alt="avatar"
-                  className="h-11 w-11 rounded-full border border-purple-500/20 object-cover"
+                  className="h-10 w-10 rounded-full border border-purple-500/20 object-cover shrink-0"
                 />
               </Link>
-              <div>
-                <Link to={`/c/${video.owner?.username}`} className="block text-sm font-semibold hover:text-purple-400 transition-colors">
+              <div className="min-w-0">
+                <Link to={`/c/${video.owner?.username}`} className="block text-sm font-semibold hover:text-purple-400 transition-colors truncate">
                   {video.owner?.fullName || "Channel Owner"}
                 </Link>
                 <span className="text-xs text-gray-500">
@@ -202,44 +202,38 @@ const Watch = () => {
               {/* Subscribe button */}
               <button
                 onClick={handleToggleSubscribe}
-                className={`ml-4 flex items-center gap-1.5 rounded-full px-5 py-2.5 text-xs font-semibold tracking-wide transition-all ${
+                className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold tracking-wide transition-all ${
                   isSubscribed
                     ? "bg-gray-800 text-gray-300 border border-gray-700 hover:bg-gray-700"
                     : "bg-purple-600 text-white shadow-md shadow-purple-500/20 hover:bg-purple-700"
                 }`}
               >
                 {isSubscribed ? (
-                  <>
-                    <BellOff className="h-3.5 w-3.5" />
-                    <span>Subscribed</span>
-                  </>
+                  <><BellOff className="h-3.5 w-3.5" /><span>Subscribed</span></>
                 ) : (
-                  <>
-                    <Bell className="h-3.5 w-3.5" />
-                    <span>Subscribe</span>
-                  </>
+                  <><Bell className="h-3.5 w-3.5" /><span>Subscribe</span></>
                 )}
               </button>
             </div>
 
             {/* Like and Action Buttons */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               <button
                 onClick={handleToggleLike}
-                className={`flex items-center gap-2 rounded-full border px-5 py-2.5 text-xs font-semibold transition-all ${
+                className={`flex items-center gap-1.5 rounded-full border px-4 py-2 text-xs font-semibold transition-all ${
                   isLiked
                     ? "bg-purple-600/10 border-purple-500 text-purple-400"
                     : "bg-gray-900 border-gray-800 text-gray-300 hover:bg-gray-800"
                 }`}
               >
-                <ThumbsUp className="h-4 w-4" fill={isLiked ? "currentColor" : "none"} />
+                <ThumbsUp className="h-3.5 w-3.5" fill={isLiked ? "currentColor" : "none"} />
                 <span>{likeCount > 0 ? likeCount : ""} Like{likeCount !== 1 ? "s" : ""}</span>
               </button>
               <button
                 onClick={handleOpenPlaylistModal}
-                className="flex items-center gap-2 rounded-full border border-gray-800 bg-gray-900 px-5 py-2.5 text-xs font-semibold text-gray-300 hover:bg-gray-800 transition-all"
+                className="flex items-center gap-1.5 rounded-full border border-gray-800 bg-gray-900 px-4 py-2 text-xs font-semibold text-gray-300 hover:bg-gray-800 transition-all"
               >
-                <FolderPlus className="h-4 w-4" />
+                <FolderPlus className="h-3.5 w-3.5" />
                 <span>Save</span>
               </button>
             </div>

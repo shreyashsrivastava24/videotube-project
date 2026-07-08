@@ -184,12 +184,12 @@ const Comments = ({ videoId }) => {
 
                   {/* Body Content */}
                   {isEditing ? (
-                    <div className="mt-2 flex items-center gap-2">
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
                       <input
                         type="text"
                         value={editContent}
                         onChange={(e) => setEditContent(e.target.value)}
-                        className="flex-1 rounded-lg bg-gray-950 border border-purple-500/50 px-3 py-1.5 text-sm text-white outline-none focus:ring-1 focus:ring-purple-500"
+                        className="flex-1 min-w-0 rounded-lg bg-gray-950 border border-purple-500/50 px-3 py-1.5 text-sm text-white outline-none focus:ring-1 focus:ring-purple-500"
                         autoFocus
                       />
                       <button

@@ -180,15 +180,15 @@ const Profile = () => {
       </div>
 
       {/* Profile Info Section */}
-      <div className="flex flex-col gap-6 md:flex-row md:items-end justify-between border-b border-gray-800 pb-6 px-4">
-        <div className="flex flex-col gap-5 md:flex-row md:items-center">
+      <div className="flex flex-col gap-4 sm:gap-6 md:flex-row md:items-end justify-between border-b border-gray-800 pb-6 px-1 sm:px-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
           <img
             src={channel.avatar || "https://api.dicebear.com/7.x/adventurer/svg"}
             alt="avatar"
-            className="h-24 w-24 rounded-full border-4 border-[#0B0F19] object-cover -mt-12 shadow-xl shrink-0"
+            className="h-20 w-20 sm:h-24 sm:w-24 rounded-full border-4 border-[#0B0F19] object-cover -mt-10 sm:-mt-12 shadow-xl shrink-0"
           />
           <div>
-            <h1 className="text-2xl font-bold font-heading text-white">{channel.fullName}</h1>
+            <h1 className="text-xl sm:text-2xl font-bold font-heading text-white">{channel.fullName}</h1>
             <p className="text-xs text-gray-400">@{channel.username}</p>
             <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-gray-500">
               <span>{subscribersCount} subscriber{subscribersCount === 1 ? "" : "s"}</span>
@@ -199,33 +199,27 @@ const Profile = () => {
         </div>
 
         {/* Subscribe / Edit Profile Action Button */}
-        <div>
+        <div className="sm:shrink-0">
           {isOwnProfile ? (
             <Link
               to="/settings"
-              className="flex items-center justify-center rounded-full bg-gray-800 border border-gray-700 px-6 py-2.5 text-xs font-semibold hover:bg-gray-700 transition-colors"
+              className="flex items-center justify-center rounded-full bg-gray-800 border border-gray-700 px-6 py-2.5 text-xs font-semibold hover:bg-gray-700 transition-colors w-full sm:w-auto"
             >
               Edit Profile
             </Link>
           ) : (
             <button
               onClick={handleToggleSubscribe}
-              className={`flex items-center gap-1.5 rounded-full px-6 py-2.5 text-xs font-semibold tracking-wide transition-all ${
+              className={`flex w-full sm:w-auto items-center justify-center gap-1.5 rounded-full px-6 py-2.5 text-xs font-semibold tracking-wide transition-all ${
                 isSubscribed
                   ? "bg-gray-800 text-gray-300 border border-gray-700 hover:bg-gray-700"
                   : "bg-purple-600 text-white shadow-md shadow-purple-500/20 hover:bg-purple-700"
               }`}
             >
               {isSubscribed ? (
-                <>
-                  <UserCheck className="h-3.5 w-3.5" />
-                  <span>Subscribed</span>
-                </>
+                <><UserCheck className="h-3.5 w-3.5" /><span>Subscribed</span></>
               ) : (
-                <>
-                  <UserPlus className="h-3.5 w-3.5" />
-                  <span>Subscribe</span>
-                </>
+                <><UserPlus className="h-3.5 w-3.5" /><span>Subscribe</span></>
               )}
             </button>
           )}
@@ -233,7 +227,7 @@ const Profile = () => {
       </div>
 
       {/* Tabs Selection */}
-      <div className="flex gap-2 border-b border-gray-800/80 px-2">
+      <div className="flex gap-1 border-b border-gray-800/80 px-1 overflow-x-auto scrollbar-none">
         {[
           { name: "Videos", id: "videos", icon: Film },
           { name: "Playlists", id: "playlists", icon: Folder },

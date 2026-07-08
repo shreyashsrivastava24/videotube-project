@@ -64,7 +64,7 @@ const Signup = () => {
   };
 
   return (
-    <div className="space-y-6 max-h-[70vh] overflow-y-auto pr-2">
+    <div className="space-y-6">
       <div className="text-center">
         <h2 className="text-2xl font-bold font-heading text-white">Create Account</h2>
         <p className="mt-1.5 text-sm text-gray-400">Join VideoTube to start streaming</p>
