@@ -166,40 +166,45 @@ const Profile = () => {
 
   return (
     <div className="space-y-6">
-      {/* Cover Banner */}
-      <div className="relative h-48 w-full overflow-hidden rounded-2xl bg-gray-900 border border-gray-800">
-        <img
-          src={
-            channel.coverImage ||
-            "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=60"
-          }
-          alt="Channel Banner"
-          className="h-full w-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0B0F19] to-transparent opacity-80"></div>
-      </div>
+      {/* Cover Banner + Avatar (YouTube style) */}
+      <div className="relative">
+        {/* Banner */}
+        <div className="relative h-36 sm:h-48 w-full overflow-hidden rounded-2xl bg-gray-900 border border-gray-800">
+          <img
+            src={
+              channel.coverImage ||
+              "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=60"
+            }
+            alt="Channel Banner"
+            className="h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0B0F19]/70 to-transparent" />
+        </div>
 
-      {/* Profile Info Section */}
-      <div className="flex flex-col gap-4 sm:gap-6 md:flex-row md:items-end justify-between border-b border-gray-800 pb-6 px-1 sm:px-4">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+        {/* Avatar — sits on the bottom edge of the banner */}
+        <div className="absolute -bottom-10 sm:-bottom-12 left-4 sm:left-6 h-20 w-20 sm:h-24 sm:w-24 rounded-full border-4 border-[#0B0F19] overflow-hidden shadow-2xl bg-gray-800 shrink-0 z-10">
           <img
             src={channel.avatar || "https://api.dicebear.com/7.x/adventurer/svg"}
             alt="avatar"
-            className="h-20 w-20 sm:h-24 sm:w-24 rounded-full border-4 border-[#0B0F19] object-cover -mt-10 sm:-mt-12 shadow-xl shrink-0"
+            className="h-full w-full object-cover"
           />
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold font-heading text-white">{channel.fullName}</h1>
-            <p className="text-xs text-gray-400">@{channel.username}</p>
-            <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-gray-500">
-              <span>{subscribersCount} subscriber{subscribersCount === 1 ? "" : "s"}</span>
-              <span className="h-1 w-1 rounded-full bg-gray-700"></span>
-              <span>{channel.channelsSubscribedToCount || 0} subscribed</span>
-            </div>
+        </div>
+      </div>
+
+      {/* Profile Info Section */}
+      <div className="flex flex-col gap-3 sm:gap-4 md:flex-row md:items-center justify-between border-b border-gray-800 pb-6 px-4 sm:px-6 pt-14 sm:pt-16">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold font-heading text-white">{channel.fullName}</h1>
+          <p className="text-xs text-gray-400 mt-0.5">@{channel.username}</p>
+          <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-gray-500">
+            <span>{subscribersCount} subscriber{subscribersCount === 1 ? "" : "s"}</span>
+            <span className="h-1 w-1 rounded-full bg-gray-700" />
+            <span>{channel.channelsSubscribedToCount || 0} subscribed</span>
           </div>
         </div>
 
         {/* Subscribe / Edit Profile Action Button */}
-        <div className="sm:shrink-0">
+        <div className="shrink-0">
           {isOwnProfile ? (
             <Link
               to="/settings"

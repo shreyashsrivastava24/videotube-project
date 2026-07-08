@@ -214,7 +214,9 @@ const AppLayout = () => {
         }`}
       >
         {/* Sidebar Brand */}
-        <div className="flex h-16 items-center justify-between px-5 border-b border-gray-800/50 shrink-0">
+        <div className={`flex h-16 items-center px-5 border-b border-gray-800/50 shrink-0 ${
+          sidebarOpen ? "justify-start" : "justify-center"
+        }`}>
           <Link to="/" className="flex items-center gap-2 font-bold font-heading tracking-wide min-w-0">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-tr from-purple-600 to-indigo-600 text-white shadow-md shrink-0">
               <Play fill="currentColor" className="ml-0.5 h-4 w-4" />
@@ -225,13 +227,6 @@ const AppLayout = () => {
               </span>
             )}
           </Link>
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-800 hover:text-white transition-colors shrink-0"
-            aria-label="Toggle sidebar"
-          >
-            <Menu className="h-4 w-4" />
-          </button>
         </div>
 
         {/* Desktop Nav Links */}
