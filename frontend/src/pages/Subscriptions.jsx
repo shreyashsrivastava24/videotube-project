@@ -12,8 +12,8 @@ const Subscriptions = () => {
       try {
         const response = await api.get("/subscriptions/me/subscriptions");
         setChannels(response.data?.data || []);
-      } catch (err) {
-        console.error(err);
+      } catch {
+        // Failed to load subscriptions
       } finally {
         setLoading(false);
       }
@@ -56,7 +56,7 @@ const Subscriptions = () => {
               <img
                 src={chan.avatar || "https://api.dicebear.com/7.x/adventurer/svg"}
                 alt="avatar"
-                className="h-16 w-16 rounded-full border border-purple-500/10 object-cover mb-3"
+                className="avatar h-16 w-16 border border-purple-500/10 mb-3"
               />
               <span className="block text-sm font-semibold text-white truncate max-w-full">
                 {chan.fullName}

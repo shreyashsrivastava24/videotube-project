@@ -221,18 +221,21 @@ const updateVideo = asyncHandler(async (req, res) => {
     );
 });
 
-// bug fixed cloudinary video deletion
 const deleteVideo = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
   const video = await Video.findById(videoId);
   if (!video) {
     throw new ApiError(404, "Video not found");
   }
+
+  // Ownership check
+  if (video.owner.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, "You are not authorized to delete this video");
+  }
+
   const videoPublicId = getPublicIdFromUrl(video.videoFile);
   const thumbnailPublicId = getPublicIdFromUrl(video.thumbnail);
-  await cloudinary.uploader.destroy(videoPublicId ,{
-    resource_type: "video"
-  });
+  await cloudinary.uploader.destroy(videoPublicId, { resource_type: "video" });
   await cloudinary.uploader.destroy(thumbnailPublicId);
   await Video.findByIdAndDelete(videoId);
 
@@ -247,6 +250,12 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
   if (!video) {
     throw new ApiError(404, "Video not found");
   }
+
+  // Ownership check
+  if (video.owner.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, "You are not authorized to change the publish status of this video");
+  }
+
   video.isPublished = !video.isPublished;
   await video.save({ validateBeforeSave: false });
   return res

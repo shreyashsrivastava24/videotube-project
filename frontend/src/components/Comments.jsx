@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import api from "../services/api";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import { formatTimeAgo } from "../utils";
 import { Loader2, Trash2, Edit2, Check, X, Send } from "lucide-react";
 import toast from "react-hot-toast";
@@ -33,8 +33,7 @@ const Comments = ({ videoId }) => {
 
       setComments((prev) => (replace ? list : [...prev, ...list]));
       setTotalPages(pagination.totalPages || 1);
-    } catch (err) {
-      console.error("Failed to load comments:", err);
+    } catch {
       toast.error("Could not fetch comments");
     } finally {
       setLoading(false);
@@ -76,7 +75,7 @@ const Comments = ({ videoId }) => {
       await api.delete(`/comments/${videoId}/c/${commentId}`);
       setComments((prev) => prev.filter((c) => c._id !== commentId));
       toast.success("Comment deleted");
-    } catch (err) {
+    } catch {
       toast.error("Failed to delete comment");
     }
   };
@@ -102,7 +101,7 @@ const Comments = ({ videoId }) => {
         setEditingId(null);
         toast.success("Comment updated");
       }
-    } catch (err) {
+    } catch {
       toast.error("Failed to save changes");
     } finally {
       setUpdatingId(null);
@@ -127,7 +126,7 @@ const Comments = ({ videoId }) => {
         <img
           src={user?.avatar || "https://api.dicebear.com/7.x/adventurer/svg"}
           alt="Avatar"
-          className="h-10 w-10 rounded-full border border-gray-800 object-cover shrink-0"
+          className="avatar h-10 w-10 border border-gray-800 shrink-0"
         />
         <div className="relative flex-1">
           <input
@@ -165,7 +164,7 @@ const Comments = ({ videoId }) => {
                 <img
                   src={comment.owner?.avatar || "https://api.dicebear.com/7.x/adventurer/svg"}
                   alt="commenter"
-                  className="h-9 w-9 rounded-full border border-gray-800 object-cover shrink-0"
+                  className="avatar h-9 w-9 border border-gray-800 shrink-0"
                 />
 
                 <div className="flex-1 min-w-0">

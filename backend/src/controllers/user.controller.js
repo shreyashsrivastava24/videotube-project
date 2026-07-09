@@ -28,13 +28,11 @@ const generateAccessAndRefreshTokens = async (userId) => {
 
 const registerUser = asyncHandler(async (req, res) => {
   // get user details from frontend(filhaal hm postman se lenge)
-  // destructure krke user details le rhe hain and req.body se sari details mil jati agr body se aa rhi aur jruri nhi hai ki hmesha data body se hi aaye wo url se bhi aa skta hai ya form se bhi aa skta hai
-  //form ya json se data aarha hai to body me mil jayega aur url se aa rha hai to urlencoded se mil jayega
+  // Destructure user details from the request body
   const { fullName, email, username, password } = req.body;
-  //console.log("email: ", email)
 
-  // validation krna hoga ki user ne sahi details di hai ya nhi
-  //.some() method array ke andar check krta hai ki koi bhi element condition ko satisfy krta hai ya nhi
+
+  // Validate that all required fields are present and not empty
   if (
     [fullName, email, username, password].some((field) => !field || field?.trim() === "")
   ) {
@@ -59,7 +57,7 @@ const registerUser = asyncHandler(async (req, res) => {
   // middleware req k andr aur fields add krta hai
   // multer hme req.files ka access de deta
   // localpath mtlb abhi server pr hai cloudinary pe ni
-  const avatarLocalPath = req.files?.avatar[0]?.path;
+  const avatarLocalPath = req.files?.avatar?.[0]?.path;
   let coverImageLocalPath;
   if (
     req.files &&
@@ -226,7 +224,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       sameSite: "lax",
     };
     // decoded tokens
-    const { accessToken, newRefreshToken } =
+    const { accessToken, refreshToken: newRefreshToken } =
       await generateAccessAndRefreshTokens(user._id);
 
     return res
@@ -342,14 +340,18 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 });
 
 const updateUserCoverImage = asyncHandler(async (req, res) => {
-  // req.file ka access multer middleware se milega
-  // local pr multer ne file upload kr di hogi
+  const oldUser = await User.findById(req.user?._id).select("coverImage");
+  let oldCoverPublicId;
+  if (oldUser?.coverImage) {
+    oldCoverPublicId = getPublicIdFromUrl(oldUser.coverImage);
+  }
+
   const coverImageLocalPath = req.file?.path;
   if (!coverImageLocalPath) {
     throw new ApiError(400, "Cover image file is required");
   }
   const coverImage = await uploadOnCloudinary(coverImageLocalPath);
-  if (!coverImage.url) {
+  if (!coverImage?.url) {
     throw new ApiError(400, "Error while uploading cover image on cloudinary");
   }
   const user = await User.findByIdAndUpdate(
@@ -361,6 +363,14 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     },
     { new: true }
   ).select("-password");
+
+  try {
+    if (oldCoverPublicId) {
+      await cloudinary.uploader.destroy(oldCoverPublicId);
+    }
+  } catch (error) {
+    console.error("Error while deleting old cover image from cloudinary: ", error);
+  }
 
   return res
     .status(200)

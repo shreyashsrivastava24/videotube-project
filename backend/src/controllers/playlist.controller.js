@@ -37,9 +37,6 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
     const playlists = await Playlist.find({
         owner: userId
     })
-    if (!playlists) {
-        throw new ApiError(404, "Playlists not found")
-    }
     return res.status(200).json(
         new ApiResponse(
             200,

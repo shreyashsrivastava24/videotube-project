@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Navigate, Outlet, Link, useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import {
   Home,
   ThumbsUp,
@@ -16,10 +16,12 @@ import {
   User,
   Plus,
   ChevronRight,
+  MessageSquare,
 } from "lucide-react";
 
 const NAV_ITEMS = [
   { name: "Home", path: "/", icon: Home },
+  { name: "Tweets", path: "/tweets", icon: MessageSquare },
   { name: "Subscriptions", path: "/subscriptions", icon: Users },
   { name: "Liked Videos", path: "/liked", icon: ThumbsUp },
   { name: "History", path: "/history", icon: History },
@@ -149,7 +151,7 @@ const AppLayout = () => {
             <img
               src={user?.avatar || "https://api.dicebear.com/7.x/adventurer/svg"}
               alt={user?.username}
-              className="h-11 w-11 rounded-full border-2 border-purple-500/40 object-cover shrink-0"
+              className="avatar h-11 w-11 border-2 border-purple-500/40 shrink-0"
             />
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold text-white">{user?.fullName}</p>
@@ -262,7 +264,7 @@ const AppLayout = () => {
                 <img
                   src={user?.avatar || "https://api.dicebear.com/7.x/adventurer/svg"}
                   alt={user?.username}
-                  className="h-9 w-9 rounded-full border border-purple-500/30 object-cover"
+                  className="avatar h-9 w-9 border border-purple-500/30"
                 />
               </Link>
               <div className="min-w-0 flex-1">
@@ -278,7 +280,7 @@ const AppLayout = () => {
                 <img
                   src={user?.avatar || "https://api.dicebear.com/7.x/adventurer/svg"}
                   alt={user?.username}
-                  className="h-8 w-8 rounded-full border border-purple-500/30 object-cover"
+                  className="avatar h-8 w-8 border border-purple-500/30"
                 />
               </Link>
             </div>
@@ -359,16 +361,17 @@ const AppLayout = () => {
             </Link>
             <Link
               to={`/c/${user?.username}`}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-800 border border-purple-500/20 overflow-hidden"
+              className="avatar h-9 w-9 bg-gray-800 border border-purple-500/20"
             >
               {user?.avatar ? (
                 <img
                   src={user.avatar}
                   alt={user.fullName}
-                  className="h-full w-full object-cover"
                 />
               ) : (
-                <User className="h-5 w-5 text-gray-400" />
+                <div className="flex h-full w-full items-center justify-center">
+                  <User className="h-5 w-5 text-gray-400" />
+                </div>
               )}
             </Link>
           </div>

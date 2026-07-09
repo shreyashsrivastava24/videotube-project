@@ -3,15 +3,15 @@ import { useParams, Link } from "react-router-dom";
 import api from "../services/api";
 import { formatTimeAgo, formatViews } from "../utils";
 import Comments from "../components/Comments";
-import { ThumbsUp, Bell, BellOff, Eye, Loader2, Play, FolderPlus, X } from "lucide-react";
+import VideoPlayer from "../components/VideoPlayer";
+import { ThumbsUp, Bell, BellOff, Loader2, FolderPlus, X } from "lucide-react";
 import toast from "react-hot-toast";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 
 const Watch = () => {
   const { videoId } = useParams();
   const { user } = useAuth();
   const [video, setVideo] = useState(null);
-  const [channelProfile, setChannelProfile] = useState(null);
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [subscribersCount, setSubscribersCount] = useState(0);
@@ -35,7 +35,7 @@ const Watch = () => {
     try {
       const response = await api.get(`/playlist/user/${user._id}`);
       setPlaylists(response.data?.data || []);
-    } catch (err) {
+    } catch {
       toast.error("Failed to load your playlists");
     } finally {
       setLoadingPlaylists(false);
@@ -71,7 +71,6 @@ const Watch = () => {
         const channelRes = await api.get(`/users/c/${videoData.owner.username}`);
         const channelData = channelRes.data?.data;
         if (channelData) {
-          setChannelProfile(channelData);
           setIsSubscribed(channelData.isSubscribed || false);
           setSubscribersCount(channelData.subscribersCount || 0);
         }
@@ -85,7 +84,7 @@ const Watch = () => {
           setIsLiked(likesData.isLiked || false);
           setLikeCount(likesData.count || 0);
         }
-      } catch (err) {
+      } catch {
         // Non-critical: failed to load like status
       }
 
@@ -96,12 +95,11 @@ const Watch = () => {
         const list = suggestionsRes.data?.videos || [];
         // Filter out current video
         setSuggestions(list.filter((v) => v._id !== videoId));
-      } catch (err) {
-        console.error("Failed to load recommendations:", err);
+      } catch {
+        // Non-critical: failed to load recommendations
       }
 
     } catch (err) {
-      console.error(err);
       setError(err.response?.data?.message || "Failed to load watch page data.");
     } finally {
       setLoading(false);
@@ -110,7 +108,8 @@ const Watch = () => {
 
   useEffect(() => {
     fetchWatchPageData();
-  }, [videoId, fetchWatchPageData]);
+  }, [fetchWatchPageData]);
+
 
   const handleToggleLike = async () => {
     try {
@@ -119,7 +118,7 @@ const Watch = () => {
       setIsLiked(!isLiked);
       setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1));
       toast.success(response.data?.message || "Success");
-    } catch (err) {
+    } catch {
       toast.error("Could not toggle like");
     }
   };
@@ -163,16 +162,11 @@ const Watch = () => {
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
       {/* Video Content & Comments */}
       <div className="lg:col-span-2 space-y-4">
-        {/* HTML5 Video Player */}
-        <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-black border border-gray-800 shadow-2xl">
-          <video
-            src={video.videoFile}
-            poster={video.thumbnail}
-            controls
-            autoPlay
-            className="h-full w-full object-contain"
-          ></video>
-        </div>
+        <VideoPlayer
+          src={video.videoFile}
+          poster={video.thumbnail}
+          title={video.title}
+        />
 
         {/* Video Info Header */}
         <div className="space-y-3">
@@ -187,7 +181,7 @@ const Watch = () => {
                 <img
                   src={video.owner?.avatar || "https://api.dicebear.com/7.x/adventurer/svg"}
                   alt="avatar"
-                  className="h-10 w-10 rounded-full border border-purple-500/20 object-cover shrink-0"
+                  className="avatar h-10 w-10 border border-purple-500/20 shrink-0"
                 />
               </Link>
               <div className="min-w-0">

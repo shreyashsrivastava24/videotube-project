@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import api from "../services/api";
 import { User, Lock, Upload, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
@@ -27,8 +27,8 @@ const Settings = () => {
     setUpdatingDetails(true);
     try {
       await updateAccount(fullName, email);
-    } catch (err) {
-      console.error(err);
+    } catch {
+      // Error handled by AuthContext
     } finally {
       setUpdatingDetails(false);
     }
@@ -56,8 +56,8 @@ const Settings = () => {
     setUpdatingAvatar(true);
     try {
       await updateAvatar(file);
-    } catch (err) {
-      console.error(err);
+    } catch {
+      // Error handled by AuthContext
     } finally {
       setUpdatingAvatar(false);
     }
@@ -69,8 +69,8 @@ const Settings = () => {
     setUpdatingCover(true);
     try {
       await updateCoverImage(file);
-    } catch (err) {
-      console.error(err);
+    } catch {
+      // Error handled by AuthContext
     } finally {
       setUpdatingCover(false);
     }
@@ -89,11 +89,10 @@ const Settings = () => {
           {/* Avatar Upload */}
           <div className="glass rounded-2xl p-5 flex flex-col items-center text-center">
             <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Avatar Image</h3>
-            <div className="relative group shrink-0">
+            <div className="relative group shrink-0 avatar h-24 w-24 border border-purple-500/20">
               <img
                 src={user?.avatar || "https://api.dicebear.com/7.x/adventurer/svg"}
                 alt="Avatar"
-                className="h-24 w-24 rounded-full object-cover border border-purple-500/20"
               />
               <label className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
                 <input type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
@@ -110,7 +109,7 @@ const Settings = () => {
               <img
                 src={user?.coverImage || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400"}
                 alt="Cover"
-                className="h-full w-full object-cover"
+                className="cover-img absolute inset-0"
               />
               <label className="absolute inset-0 flex items-center justify-center bg-black/60 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
                 <input type="file" accept="image/*" className="hidden" onChange={handleCoverChange} />

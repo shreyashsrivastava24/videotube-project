@@ -24,11 +24,11 @@ const VideoCard = ({ video }) => {
       {/* Details Row */}
       <div className="flex gap-3 px-1 py-2">
         {/* Owner Avatar */}
-        <Link to={`/c/${owner?.username}`} className="h-9 w-9 shrink-0">
+        <Link to={`/c/${owner?.username}`} className="avatar h-9 w-9 shrink-0">
           <img
             src={owner?.avatar || "https://api.dicebear.com/7.x/adventurer/svg"}
             alt={owner?.username || "channel"}
-            className="h-full w-full rounded-full border border-gray-800 object-cover"
+            className="border border-gray-800"
           />
         </Link>
 

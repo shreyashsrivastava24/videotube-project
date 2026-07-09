@@ -14,6 +14,7 @@ import Subscriptions from "../pages/Subscriptions";
 import PlaylistDetail from "../pages/PlaylistDetail";
 import Search from "../pages/Search";
 import Settings from "../pages/Settings";
+import Tweets from "../pages/Tweets";
 
 const AppRoutes = () => {
   return (
@@ -36,6 +37,7 @@ const AppRoutes = () => {
           <Route path="/subscriptions" element={<Subscriptions />} />
           <Route path="/playlist/:playlistId" element={<PlaylistDetail />} />
           <Route path="/search" element={<Search />} />
+          <Route path="/tweets" element={<Tweets />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
 

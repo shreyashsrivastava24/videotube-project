@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import { Eye, EyeOff, Loader2, Upload, User } from "lucide-react";
 
 const Signup = () => {
@@ -56,8 +56,8 @@ const Signup = () => {
       if (userCreated) {
         navigate("/login");
       }
-    } catch (err) {
-      console.error(err);
+    } catch {
+      // Signup error handled by AuthContext
     } finally {
       setSubmitting(false);
     }
@@ -172,7 +172,7 @@ const Signup = () => {
                 className="absolute inset-0 opacity-0 cursor-pointer"
               />
               {avatarPreview ? (
-                <img src={avatarPreview} alt="Avatar Preview" className="h-12 w-12 rounded-full object-cover border border-purple-500/30" />
+                <img src={avatarPreview} alt="Avatar Preview" className="avatar h-12 w-12 border border-purple-500/30" />
               ) : (
                 <>
                   <User className="h-5 w-5 text-gray-400 mb-1" />

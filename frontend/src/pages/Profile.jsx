@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../services/api";
-import { useAuth } from "../context/AuthContext";
-import { formatTimeAgo, formatViews } from "../utils";
+import { useAuth } from "../hooks/useAuth";
+import { formatTimeAgo } from "../utils";
 import VideoCard from "../components/VideoCard";
 import VideoSkeleton from "../components/VideoSkeleton";
-import { Folder, Film, Info, UserCheck, UserPlus, Loader2, X } from "lucide-react";
+import { Folder, Film, Info, UserCheck, UserPlus, Loader2, X, MessageSquare } from "lucide-react";
+import TweetList from "../components/TweetList";
 import toast from "react-hot-toast";
 
 const Profile = () => {
@@ -15,7 +16,7 @@ const Profile = () => {
   const [channel, setChannel] = useState(null);
   const [videos, setVideos] = useState([]);
   const [playlists, setPlaylists] = useState([]);
-  const [activeTab, setActiveTab] = useState("videos"); // "videos" | "playlists" | "about"
+  const [activeTab, setActiveTab] = useState("videos");
   
   const [loading, setLoading] = useState(true);
   const [loadingVideos, setLoadingVideos] = useState(false);
@@ -25,39 +26,9 @@ const Profile = () => {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [subscribersCount, setSubscribersCount] = useState(0);
 
-  const fetchProfileData = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      // 1. Fetch channel profile info
-      const channelRes = await api.get(`/users/c/${username}`);
-      const channelData = channelRes.data?.data;
-      if (!channelData) {
-        throw new Error("Channel not found");
-      }
-      setChannel(channelData);
-      setIsSubscribed(channelData.isSubscribed || false);
-      setSubscribersCount(channelData.subscribersCount || 0);
-
-      // Trigger lazy tab loads
-      fetchChannelVideos(channelData._id);
-    } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.message || "Failed to load channel profile.");
-    } finally {
-      setLoading(false);
-    }
-  }, [username]);
-
-  useEffect(() => {
-    fetchProfileData();
-  }, [username, fetchProfileData]);
-
-  const fetchChannelVideos = async (userId) => {
+  const fetchChannelVideos = useCallback(async (userId) => {
     setLoadingVideos(true);
     try {
-      // If viewing own profile, use dashboard/videos to see all (including unlisted)
-      // Otherwise use public /videos endpoint (only published)
       const isOwnChannel = currentUser?._id === userId;
       let fetchedVideos = [];
       if (isOwnChannel) {
@@ -70,20 +41,44 @@ const Profile = () => {
         fetchedVideos = response.data?.videos || [];
       }
       setVideos(fetchedVideos);
-    } catch (err) {
-      console.error("Failed to load channel videos", err);
+    } catch {
+      // Failed to load channel videos
     } finally {
       setLoadingVideos(false);
     }
-  };
+  }, [currentUser?._id]);
+
+  const fetchProfileData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const channelRes = await api.get(`/users/c/${username}`);
+      const channelData = channelRes.data?.data;
+      if (!channelData) {
+        throw new Error("Channel not found");
+      }
+      setChannel(channelData);
+      setIsSubscribed(channelData.isSubscribed || false);
+      setSubscribersCount(channelData.subscribersCount || 0);
+      fetchChannelVideos(channelData._id);
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to load channel profile.");
+    } finally {
+      setLoading(false);
+    }
+  }, [username, fetchChannelVideos]);
+
+  useEffect(() => {
+    fetchProfileData();
+  }, [fetchProfileData]);
 
   const fetchChannelPlaylists = async (userId) => {
     setLoadingPlaylists(true);
     try {
       const response = await api.get(`/playlist/user/${userId}`);
       setPlaylists(response.data?.data || []);
-    } catch (err) {
-      console.error("Failed to load channel playlists", err);
+    } catch {
+      // Failed to load channel playlists
     } finally {
       setLoadingPlaylists(false);
     }
@@ -111,7 +106,7 @@ const Profile = () => {
         setNewPlaylistDesc("");
         toast.success("Playlist created successfully!");
       }
-    } catch (err) {
+    } catch {
       toast.error("Failed to create playlist");
     } finally {
       setCreatingPlaylist(false);
@@ -168,25 +163,24 @@ const Profile = () => {
     <div className="space-y-6">
       {/* Cover Banner + Avatar (YouTube style) */}
       <div className="relative">
-        {/* Banner */}
-        <div className="relative h-36 sm:h-48 w-full overflow-hidden rounded-2xl bg-gray-900 border border-gray-800">
+        {/* Banner — responsive aspect ratio so full image shows on desktop */}
+        <div className="relative w-full overflow-hidden rounded-2xl bg-gray-900 border border-gray-800 aspect-[2.2/1] sm:aspect-[3/1] md:aspect-[4/1] lg:aspect-[5/1]">
           <img
             src={
               channel.coverImage ||
               "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=60"
             }
             alt="Channel Banner"
-            className="h-full w-full object-cover"
+            className="cover-img absolute inset-0"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0B0F19]/70 to-transparent" />
         </div>
 
         {/* Avatar — sits on the bottom edge of the banner */}
-        <div className="absolute -bottom-10 sm:-bottom-12 left-4 sm:left-6 h-20 w-20 sm:h-24 sm:w-24 rounded-full border-4 border-[#0B0F19] overflow-hidden shadow-2xl bg-gray-800 shrink-0 z-10">
+        <div className="avatar absolute -bottom-10 sm:-bottom-12 left-4 sm:left-6 h-20 w-20 sm:h-24 sm:w-24 border-4 border-[#0B0F19] shadow-2xl bg-gray-800 z-10">
           <img
             src={channel.avatar || "https://api.dicebear.com/7.x/adventurer/svg"}
             alt="avatar"
-            className="h-full w-full object-cover"
           />
         </div>
       </div>
@@ -236,6 +230,7 @@ const Profile = () => {
         {[
           { name: "Videos", id: "videos", icon: Film },
           { name: "Playlists", id: "playlists", icon: Folder },
+          { name: "Tweets", id: "tweets", icon: MessageSquare },
           { name: "About", id: "about", icon: Info },
         ].map((tab) => {
           const Icon = tab.icon;
@@ -334,6 +329,19 @@ const Profile = () => {
               </div>
             </div>
           )
+        )}
+
+        {/* Tweets tab */}
+        {activeTab === "tweets" && (
+          <TweetList
+            userId={channel._id}
+            showComposer={isOwnProfile}
+            emptyMessage={
+              isOwnProfile
+                ? "You haven't posted any tweets yet."
+                : "This channel hasn't posted any tweets yet."
+            }
+          />
         )}
 
         {/* About tab */}

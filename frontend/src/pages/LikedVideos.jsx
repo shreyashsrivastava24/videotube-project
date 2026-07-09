@@ -13,8 +13,8 @@ const LikedVideos = () => {
       try {
         const response = await api.get("/likes/videos");
         setVideos(response.data?.data || []);
-      } catch (err) {
-        console.error(err);
+      } catch {
+        // Failed to load liked videos
       } finally {
         setLoading(false);
       }

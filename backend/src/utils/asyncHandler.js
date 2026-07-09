@@ -32,21 +32,3 @@ const asyncHandler = (requestHandler) => {
 };
 
 export { asyncHandler };
-
-
-// ---------------------------------------------
-
-// M2 using try-catch (alternative)
-
-// const asyncHandler = (fn) => async (req, res, next) => {
-//     try {
-//         // fn = tumhara async route function
-//         await fn(req, res, next); // run ho raha hai
-//     } catch (error) {
-//         // error aaya to yaha manually handle kar rahe hain
-//         res.status(error.code || 500).json({
-//             success: false,
-//             message: error.message
-//         });
-//     }
-// };

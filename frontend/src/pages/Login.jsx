@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 const Login = () => {
@@ -23,8 +23,8 @@ const Login = () => {
       if (success) {
         navigate("/");
       }
-    } catch (err) {
-      console.error(err);
+    } catch {
+      // Login error handled by AuthContext
     } finally {
       setSubmitting(false);
     }

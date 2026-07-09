@@ -1,6 +1,5 @@
 import mongoose, { isValidObjectId } from "mongoose"
 import { Tweet } from "../models/tweet.model.js"
-import { User } from "../models/user.model.js"
 import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
@@ -25,13 +24,80 @@ const createTweet = asyncHandler(async (req, res) => {
     );
 })
 
-const getUserTweets = asyncHandler(async (req, res) => {
-    const userId = req.user._id;
+// Reusable aggregation pipeline stages (after optional $match)
+const buildTweetPipeline = (currentUserId) => {
+    const userObjId = currentUserId
+        ? new mongoose.Types.ObjectId(String(currentUserId))
+        : null;
 
-    // find khud hi array me return krega isliye manually array create krne ki need nhi
-    const tweets = await Tweet.find({
-        owner: userId
-    }).sort({ createdAt: -1 });
+    return [
+        // Join owner info
+        {
+            $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "ownerDetails",
+            }
+        },
+        { $unwind: "$ownerDetails" },
+        // Join likes
+        {
+            $lookup: {
+                from: "likes",
+                localField: "_id",
+                foreignField: "tweet",
+                as: "tweetLikes"
+            }
+        },
+        // Compute likesCount and isLiked
+        {
+            $addFields: {
+                likesCount: { $size: "$tweetLikes" },
+                isLiked: userObjId
+                    ? { $in: [userObjId, "$tweetLikes.likedBy"] }
+                    : false,
+                owner: {
+                    _id: "$ownerDetails._id",
+                    username: "$ownerDetails.username",
+                    fullName: "$ownerDetails.fullName",
+                    avatar: "$ownerDetails.avatar"
+                }
+            }
+        },
+        // Clean up
+        {
+            $project: {
+                tweetLikes: 0,
+                ownerDetails: 0
+            }
+        },
+        { $sort: { createdAt: -1 } }
+    ];
+};
+
+const getAllTweets = asyncHandler(async (req, res) => {
+    const pipeline = buildTweetPipeline(req.user?._id);
+    const tweets = await Tweet.aggregate(pipeline);
+
+    return res.status(200).json(
+        new ApiResponse(200, tweets, "Tweets fetched successfully")
+    );
+});
+
+const getUserTweets = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+    const targetUserId =
+        userId && isValidObjectId(userId)
+            ? new mongoose.Types.ObjectId(userId)
+            : new mongoose.Types.ObjectId(String(req.user._id));
+
+    const pipeline = [
+        { $match: { owner: targetUserId } },
+        ...buildTweetPipeline(req.user?._id)
+    ];
+
+    const tweets = await Tweet.aggregate(pipeline);
 
     return res.status(200).json(
         new ApiResponse(200, tweets, "User tweets fetched successfully")
@@ -90,6 +156,7 @@ const deleteTweet = asyncHandler(async (req, res) => {
 
 export {
     createTweet,
+    getAllTweets,
     getUserTweets,
     updateTweet,
     deleteTweet

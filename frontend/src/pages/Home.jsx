@@ -45,8 +45,7 @@ const Home = () => {
       } else {
         setHasMore(true);
       }
-    } catch (err) {
-      console.error("Error fetching videos:", err);
+    } catch {
       setError("Failed to load videos. Please try again.");
     } finally {
       setLoading(false);

@@ -48,8 +48,7 @@ const Dashboard = () => {
       // 2. Fetch user's videos
       const videosRes = await api.get("/dashboard/videos");
       setVideos(videosRes.data?.data || []);
-    } catch (err) {
-      console.error(err);
+    } catch {
       toast.error("Failed to load dashboard data");
     } finally {
       setLoading(false);
@@ -142,11 +141,11 @@ const Dashboard = () => {
       await api.delete(`/videos/${videoId}`);
       toast.success("Video deleted");
       setVideos((prev) => prev.filter((v) => v._id !== videoId));
-      fetchDashboardData();
-    } catch (err) {
+    } catch {
       toast.error("Failed to delete video");
     }
   };
+
 
   const handleTogglePublish = async (videoId) => {
     try {
@@ -158,7 +157,7 @@ const Dashboard = () => {
         );
         toast.success("Publish status updated!");
       }
-    } catch (err) {
+    } catch {
       toast.error("Failed to toggle publish status");
     }
   };

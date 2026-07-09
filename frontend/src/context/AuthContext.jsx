@@ -1,9 +1,9 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useState, useEffect } from "react";
 import api from "../services/api";
 import toast from "react-hot-toast";
 import { getErrorMessage } from "../utils";
 
-const AuthContext = createContext(null);
+export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -27,12 +27,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
-    if (accessToken) {
-      fetchCurrentUser();
-    } else {
-      setLoading(false);
-    }
+    fetchCurrentUser();
 
     const handleAuthExpired = () => {
       setUser(null);
@@ -44,6 +39,7 @@ export const AuthProvider = ({ children }) => {
       window.removeEventListener("auth-expired", handleAuthExpired);
     };
   }, []);
+
 
   const login = async (emailOrUsername, password) => {
     try {
@@ -87,8 +83,8 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await api.post("/users/logout");
-    } catch (error) {
-      console.error("Logout request failed", error);
+    } catch {
+      // Logout request failed — still clear local session
     } finally {
       setUser(null);
       localStorage.removeItem("accessToken");
@@ -164,10 +160,3 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-};

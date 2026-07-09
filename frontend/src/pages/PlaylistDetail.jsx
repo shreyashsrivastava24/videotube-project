@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import { formatDuration, formatTimeAgo, formatViews } from "../utils";
-import { Folder, Trash2, Edit2, Play, X, Loader2, PlayCircle } from "lucide-react";
+import { Folder, Trash2, Edit2, Play, X, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 
 const PlaylistDetail = () => {
@@ -30,8 +30,7 @@ const PlaylistDetail = () => {
         setName(data.name);
         setDescription(data.description);
       }
-    } catch (err) {
-      console.error(err);
+    } catch {
       toast.error("Failed to load playlist details");
     } finally {
       setLoading(false);
@@ -48,7 +47,7 @@ const PlaylistDetail = () => {
       await api.delete(`/playlist/${playlistId}`);
       toast.success("Playlist deleted");
       navigate(`/c/${user.username}`);
-    } catch (err) {
+    } catch {
       toast.error("Failed to delete playlist");
     }
   };
@@ -65,7 +64,7 @@ const PlaylistDetail = () => {
         setEditModalOpen(false);
         toast.success("Playlist updated");
       }
-    } catch (err) {
+    } catch {
       toast.error("Failed to update playlist");
     } finally {
       setSubmitting(false);
@@ -80,7 +79,7 @@ const PlaylistDetail = () => {
         videos: prev.videos.filter((v) => v._id !== videoId),
       }));
       toast.success("Video removed from playlist");
-    } catch (err) {
+    } catch {
       toast.error("Failed to remove video");
     }
   };

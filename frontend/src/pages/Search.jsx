@@ -23,8 +23,8 @@ const Search = () => {
         },
       });
       setVideos(response.data?.videos || []);
-    } catch (err) {
-      console.error(err);
+    } catch {
+      // Search failed
     } finally {
       setLoading(false);
     }

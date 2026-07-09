@@ -13,8 +13,8 @@ const History = () => {
       try {
         const response = await api.get("/users/history");
         setVideos(response.data?.data || []);
-      } catch (err) {
-        console.error(err);
+      } catch {
+        // Failed to load history
       } finally {
         setLoading(false);
       }
